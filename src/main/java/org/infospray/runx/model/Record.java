@@ -12,6 +12,7 @@ public class Record {
 	private String heure;
 	private Boolean fixedSpeed;
 	private Long	timestamp;
+	private Integer heartRate;
 	
 
 	public Double getPositionLatDegres() {
@@ -70,6 +71,12 @@ public class Record {
 	}
 	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
+	}
+	public Integer getHeartRate() {
+		return heartRate;
+	}
+	public void setHeartRate(Integer heartRate) {
+		this.heartRate = heartRate;
 	}
 
 	

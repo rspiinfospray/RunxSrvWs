@@ -89,6 +89,7 @@ public class ActivityServiceImpl implements ActivityService {
 				record.setDistance((String)mapRecord.get("distance"));
 				record.setPositionLatDegres(((BigDecimal)mapRecord.get("positionLatDegres")).doubleValue());
 				record.setPositionLongDegres(((BigDecimal)mapRecord.get("positionLongDegres")).doubleValue());
+				record.setHeartRate(Integer.valueOf((String)mapRecord.get("heartRate")));
 				
 				String speed = (String)mapRecord.get("speed");
 				if(null == speed){

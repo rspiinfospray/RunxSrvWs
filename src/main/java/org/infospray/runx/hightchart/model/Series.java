@@ -13,6 +13,8 @@ public class Series {
 	
 	private Integer pointStart;
 	
+	private String color;
+	
 	List<List<Object>> data = new ArrayList<List<Object>>();
 
 	public String getType() {
@@ -54,6 +56,16 @@ public class Series {
 	public void setData(List<List<Object>> data) {
 		this.data = data;
 	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	
 
 	
 

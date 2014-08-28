@@ -61,7 +61,7 @@
 		</dependency>
 
 		<!-- Besoin de creer a la mano les repertoires org/infospray/fit/1.0.0/
-		et coller la lib dedans -->
+		et coller la lib qui se trouve dans /lib dedans -->
 		<dependency>
 			<groupId>org.infospray</groupId>
 			<artifactId>fit</artifactId>

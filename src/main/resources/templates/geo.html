@@ -7,10 +7,14 @@
 <meta name="description" content="" />
 <meta name="keywords" content="" />
 
-<link
-	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.2.0/css/bootstrap.min.css"
-	th:href="@{/webjars/bootstrap/3.2.0/css/bootstrap.min.css}"
-	rel="stylesheet" media="screen" />
+<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.1/jquery.min.js"
+	th:src="@{/webjars/jquery/2.1.1/jquery.min.js}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+
 <link
 	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.2.0/css/bootstrap.min.css"
 	th:href="@{/webjars/bootstrap/3.2.0/css/bootstrap.min.css}"
@@ -31,12 +35,6 @@ html, body, #mapgoogle {
 	right: 200px;
 }
 </style>
-<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.1/jquery.min.js"
-	th:src="@{/webjars/jquery/2.1.1/jquery.min.js}"></script>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
-<script src="http://code.highcharts.com/highcharts.js"></script>
-<script src="http://code.highcharts.com/modules/exporting.js"></script>
-
 
 <script>
 /*<![CDATA[*/
@@ -123,14 +121,21 @@ function initialize() {
 
 $(function() {
 	
-	 $.getJSON('http://localhost:8080/json/chart/amne/activity/84887/', function(data) {
+	 $.getJSON('http://localhost:8080/json/chart/amne/activity/84887/speed/', function(data) {
 	    	$('#containerChartVitesse').highcharts(data);
 	    });
 	 
 
-	$( "#chartTab" ).tabs();
-		
-	
+	 
+	$('#myTab a').click(function (e) {
+	    	  e.preventDefault();
+	    	  $(this).tab('show');
+	    		 $.getJSON('http://localhost:8080/json/chart/amne/activity/84887/bpm/', function(data) {
+	    		    	$('#containerChartBpm').highcharts(data);
+	    		    });
+	    	  
+	    	});
+		    
 });
 
   
@@ -145,42 +150,22 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
 <body>
 	<div id="mapgoogle"></div>
+	<br/>
 	<table>
 		<tr>
 			<td>
-
-				<div class="container">
-					<ul id="chartTab" class="nav nav-tabs">
-						<li class="active"><a href="#tab_a" data-toggle="tab">Vitesse en Km/h</a></li>
-						<li><a href="#tab_b" data-toggle="tab">Frequence cardiaque</a></li>
-						<li><a href="#tab_c" data-toggle="tab">Tab C</a></li>
-						<li><a href="#tab_d" data-toggle="tab">Tab D</a></li>
-					</ul>
-					<div class="tab-content">
-						<div class="tab-pane active" id="tab_a">
-							<h4>Pane A</h4>
-							<div id="containerChartVitesse"
-								style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-						</div>
-						<div class="tab-pane" id="tab_b">
-							<h4>Pane B</h4>
-							<p>Pellentesque habitant morbi tristique senectus et netus et
-								malesuada fames ac turpis egestas.</p>
-						</div>
-						<div class="tab-pane" id="tab_c">
-							<h4>Pane C</h4>
-							<p>Pellentesque habitant morbi tristique senectus et netus et
-								malesuada fames ac turpis egestas.</p>
-						</div>
-						<div class="tab-pane" id="tab_d">
-							<h4>Pane D</h4>
-							<p>Pellentesque habitant morbi tristique senectus et netus et
-								malesuada fames ac turpis egestas.</p>
-						</div>
-					</div>
-					<!-- tab content -->
-				</div>
-				<!-- end of container -->
+				<ul class="nav nav-tabs" role="tablist" id="myTab">
+				  <li class="active"><a href="#home" role="tab" data-toggle="tab">Vitesse Km/h</a></li>
+				  <li><a href="#profile" role="tab" data-toggle="tab">Fréquence Cardiaque</a></li>
+				</ul>				
+				<div class="tab-content">
+				  <div class="tab-pane active" id="home">
+				  	<div id="containerChartVitesse" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+				  </div>
+				  <div class="tab-pane" id="profile">
+				  	<div id="containerChartBpm" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+				  </div>
+				</div>				
 			</td>
 		</tr>
 		<tr>
