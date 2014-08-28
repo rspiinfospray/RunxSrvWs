@@ -33,6 +33,7 @@ public class GoogleMapServiceImpl implements GoogleMapService {
 		
 		
 		int cptLap = 0;
+		int nbLap = activityService.getListLaps().size();
 		for(Lap currentLap : activityService.getListLaps()){
 			
 			if(cptLap == 0){
@@ -40,7 +41,9 @@ public class GoogleMapServiceImpl implements GoogleMapService {
 				Point point = new Point(Double.valueOf(currentLap.getStartPositionLongDegres()),Double.valueOf(currentLap.getStartPositionLatDegres()));			
 				feature.setGeometry(point);					
 				feature.setProperty("avgVitesse", currentLap.getAvgSpeed());	
-				feature.setProperty("heure", currentLap.getBeginLapTime());						
+				feature.setProperty("heure", currentLap.getBeginLapTime());
+				feature.setProperty("lap", String.valueOf(cptLap));
+				feature.setProperty("startLap", true);
 				featureCollection.add(feature);		
 			}
 			
@@ -48,7 +51,11 @@ public class GoogleMapServiceImpl implements GoogleMapService {
 			Point point = new Point(Double.valueOf(currentLap.getEndPositionLongDegres()),Double.valueOf(currentLap.getEndPositionLatDegres()));			
 			feature.setGeometry(point);					
 			feature.setProperty("avgVitesse", currentLap.getAvgSpeed());	
-			feature.setProperty("heure", currentLap.getBeginLapTime());						
+			feature.setProperty("heure", currentLap.getBeginLapTime());
+			feature.setProperty("lap", String.valueOf(cptLap + 1));
+			if(nbLap == cptLap + 1){
+				feature.setProperty("stopLap", true);
+			}
 			featureCollection.add(feature);			
 			
 			cptLap++;

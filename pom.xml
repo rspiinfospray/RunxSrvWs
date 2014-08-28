@@ -13,6 +13,7 @@
 
 	<properties>
 		<start-class>org.infospray.runx.springboot.config.Runner</start-class>
+		<fitLibPath>/home/remi/workspace/RunxSrvWs/lib/fit-1.0.0.jar</fitLibPath>
 	</properties>
 
 	<dependencies>
@@ -59,12 +60,14 @@
 			<version>1.2</version>
 		</dependency>
 
+		<!-- Besoin de creer a la mano les repertoires org/infospray/fit/1.0.0/
+		et coller la lib dedans -->
 		<dependency>
 			<groupId>org.infospray</groupId>
 			<artifactId>fit</artifactId>
 			<version>1.0.0</version>
-			<scope>system</scope>
-			<systemPath>/home/remi/workspace/RunxSrvWs/lib/fit-1.0.0.jar</systemPath>
+			<!--<scope>system</scope>
+		  	<systemPath>{fitLibPath}</systemPath> -->
 		</dependency>
 
 	</dependencies>

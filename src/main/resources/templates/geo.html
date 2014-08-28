@@ -11,6 +11,10 @@
 	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.2.0/css/bootstrap.min.css"
 	th:href="@{/webjars/bootstrap/3.2.0/css/bootstrap.min.css}"
 	rel="stylesheet" media="screen" />
+<link
+	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.2.0/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/3.2.0/css/bootstrap.min.css}"
+	rel="stylesheet" media="screen" />
 <style>
 html, body, #mapgoogle {
 	height: 90%;
@@ -56,23 +60,35 @@ function initialize() {
   map.data.addListener('click', function(event) {
 	  
 	  
-	  	var content = $('<div />');
+	  	var content = $('<div/>');
 	  	
+	  	var lap = event.feature.getProperty('lap');
+	  	if(lap != null){
+	  		content.append('<div>'+"Kilomètre : "+  lap+'</div>');
+	  	}
+	  	var startLap = event.feature.getProperty('startLap');
+	  	if(startLap != null){
+	  		content.append('<div>Début de la course</div>');
+	  	}
+	  	var stopLap = event.feature.getProperty('stopLap');
+	  	if(stopLap != null){
+	  		content.append('<div>Fin de la course</div>');
+	  	}
 	  	var avgVitesse = event.feature.getProperty('avgVitesse');
 	  	if(avgVitesse != null){
-	  		content.append('<p>'+"Vitesse moy. : "+  avgVitesse+' Km/h</p>');
+	  		content.append('<div>'+"Vitesse moy. : "+  avgVitesse+' Km/h</div>');
 	  	}
 	  	var speedIndice = event.feature.getProperty('speedIndice');
 	  	if(speedIndice !=  null){
-	  		content.append('<p>'+"Indice vitesse : "+  speedIndice+' %</p>');
+	  		content.append('<div>'+"Indice vitesse : "+  speedIndice+' %</div>');
   		}
 	  	
 	  	var vitesse = event.feature.getProperty('vitesse');
 	  	if(vitesse !=  null){
-	  		content.append('<p>'+"Vitesse : "+  vitesse+' Km/h</p>');
+	  		content.append('<div>'+"Vitesse : "+  vitesse+' Km/h</div>');
   		}
 	  	
-	  	content.append('<p>'+"Heure : "+  event.feature.getProperty('heure')+'</p>');
+	  	content.append('<div>'+"Heure : "+  event.feature.getProperty('heure')+'</div>');
 	  	
 	  	
 	  	 if (event.feature.getGeometry() instanceof google.maps.LatLng) {
@@ -108,13 +124,16 @@ function initialize() {
 $(function() {
 	
 	 $.getJSON('http://localhost:8080/json/chart/amne/activity/84887/', function(data) {
-	    	$('#container').highcharts(data);
+	    	$('#containerChartVitesse').highcharts(data);
 	    });
+	 
+
+	$( "#chartTab" ).tabs();
+		
 	
 });
 
-
-
+  
 google.maps.event.addDomListener(window, 'load', initialize);
 
 
@@ -131,16 +150,16 @@ google.maps.event.addDomListener(window, 'load', initialize);
 			<td>
 
 				<div class="container">
-					<ul class="nav nav-tabs">
+					<ul id="chartTab" class="nav nav-tabs">
 						<li class="active"><a href="#tab_a" data-toggle="tab">Vitesse en Km/h</a></li>
-						<li><a href="#tab_b" data-toggle="tab">Tab B</a></li>
+						<li><a href="#tab_b" data-toggle="tab">Frequence cardiaque</a></li>
 						<li><a href="#tab_c" data-toggle="tab">Tab C</a></li>
 						<li><a href="#tab_d" data-toggle="tab">Tab D</a></li>
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="tab_a">
 							<h4>Pane A</h4>
-							<div id="container"
+							<div id="containerChartVitesse"
 								style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 						</div>
 						<div class="tab-pane" id="tab_b">

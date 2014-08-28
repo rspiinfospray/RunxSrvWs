@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.infospray.runx.model.Coord;
 import org.infospray.runx.model.Lap;
 import org.infospray.runx.model.LapSpeedFixing;
 import org.infospray.runx.model.Record;
@@ -44,9 +45,19 @@ public class ActivityServiceImpl implements ActivityService {
 			lap.setMaxSpeed(listLapSpeedFixing.get(cpt).getMaxSpeed());
 			lap.setMessageIndex(Integer.valueOf((String)mapLap.get("messageIndex")) + 1 );
 			lap.setSport((String)mapLap.get("sport"));
-			lap.setSportLibelle((String)mapLap.get("sportLibelle"));			
-			lap.setStartPositionLatDegres(((BigDecimal)mapLap.get("startPositionLatDegres")).doubleValue());		
-			lap.setStartPositionLongDegres(((BigDecimal)mapLap.get("startPositionLongDegres")).doubleValue());	
+			lap.setSportLibelle((String)mapLap.get("sportLibelle"));
+			
+			BigDecimal startPositionLatDegres =  (BigDecimal)mapLap.get("startPositionLatDegres");
+			BigDecimal startPositionLongDegres =  (BigDecimal)mapLap.get("startPositionLongDegres");
+			if(null != startPositionLatDegres && null != startPositionLongDegres){
+				lap.setStartPositionLatDegres(startPositionLatDegres.doubleValue());
+				lap.setStartPositionLongDegres(startPositionLongDegres.doubleValue());
+			}else{
+				Coord coord = this.getFirstLatLongData();
+				lap.setStartPositionLatDegres(coord.getLat());
+				lap.setStartPositionLongDegres(coord.getLng());
+			}
+	
 			lap.setTotalAscent((String)mapLap.get("totalAscent"));
 			lap.setTotalCalories((String)mapLap.get("totalCalories"));
 			lap.setTotalDescent((String)mapLap.get("totalDescent"));
@@ -70,14 +81,20 @@ public class ActivityServiceImpl implements ActivityService {
 
 		for (Map<String, Object> mapRecord : listMapRecord) {
 
-			if(mapRecord.containsKey("positionLatDegres")){				
+			if(mapRecord.containsKey("positionLatDegres")){
+				
 				Record record = new Record();
 
 				record.setAltitude((String)mapRecord.get("altitude"));
 				record.setDistance((String)mapRecord.get("distance"));
 				record.setPositionLatDegres(((BigDecimal)mapRecord.get("positionLatDegres")).doubleValue());
 				record.setPositionLongDegres(((BigDecimal)mapRecord.get("positionLongDegres")).doubleValue());
-				Double dSpeed = Utils.mettreSecondeToKilometreHeure((String)mapRecord.get("speed"));				
+				
+				String speed = (String)mapRecord.get("speed");
+				if(null == speed){
+					speed = "0.0";
+				}				
+				Double dSpeed = Utils.mettreSecondeToKilometreHeure(speed);				
 				if(dSpeed.doubleValue() > Utils.MAX_SPEED_RUNNING_LIMIT){
 					record.setSpeed(previousSpeed);
 					record.setFixedSpeed(true);
@@ -105,9 +122,12 @@ public class ActivityServiceImpl implements ActivityService {
 		double maxSpeed = 0d;
 
 		for (Map<String, Object> mapRecord : listMapRecord) {
-			Double dSpeed = Utils.mettreSecondeToKilometreHeure((String)mapRecord.get("speed"));
-			if(dSpeed > maxSpeed &&  dSpeed <= Utils.MAX_SPEED_RUNNING_LIMIT){
-				maxSpeed =  dSpeed;
+			String speed = (String)mapRecord.get("speed");
+			if(null!= speed){
+				Double dSpeed = Utils.mettreSecondeToKilometreHeure(speed);
+				if(dSpeed > maxSpeed &&  dSpeed <= Utils.MAX_SPEED_RUNNING_LIMIT){
+					maxSpeed =  dSpeed;
+				}
 			}
 		}
 
@@ -122,11 +142,16 @@ public class ActivityServiceImpl implements ActivityService {
 		int nbRecord = listMapRecord.size();
 		int nbValidRecord = nbRecord;
 		for (Map<String, Object> mapRecord : listMapRecord) {
-			double dSpeed = Utils.mettreSecondeToKilometreHeure((String)mapRecord.get("speed"));
-			if(dSpeed > Utils.MAX_SPEED_RUNNING_LIMIT){
+			String speed = (String)mapRecord.get("speed");
+			if(null == speed){
 				nbValidRecord--;
 			}else{
-				avgSpeed += dSpeed;
+				double dSpeed = Utils.mettreSecondeToKilometreHeure(speed);
+				if(dSpeed > Utils.MAX_SPEED_RUNNING_LIMIT){
+					nbValidRecord--;
+				}else{
+					avgSpeed += dSpeed;
+				}
 			}
 		}
 		
@@ -158,7 +183,11 @@ public class ActivityServiceImpl implements ActivityService {
 		int recordCpt = 0;
 		
 		for (Map<String, Object> currentRecordMap : listMapRecord) {
-			double dSpeed = Utils.mettreSecondeToKilometreHeure((String)currentRecordMap.get("speed"));
+			String speed = (String)currentRecordMap.get("speed");
+			if(null == speed){
+				speed = "0.0";
+			}
+			double dSpeed = Utils.mettreSecondeToKilometreHeure(speed);
 			if(dSpeed <= Utils.MAX_SPEED_RUNNING_LIMIT){
 		
 				LapSpeedFixing lapFixed = this.getLapByTimestamp(listLapSpeedFixing, (Long)currentRecordMap.get("timestamp"));
@@ -235,7 +264,11 @@ public class ActivityServiceImpl implements ActivityService {
 		session.setSport(Integer.valueOf((String)mapSession.get("sport")));
 		session.setSportLibelle((String)mapSession.get("sportLibelle"));
 		session.setStartActivityTime((Long)mapSession.get("startTime"));
-		session.setStartPositionLongDegres(((BigDecimal)mapSession.get("startPositionLongDegres")).doubleValue());
+		
+		BigDecimal startPositionLongDegres = (BigDecimal)mapSession.get("startPositionLongDegres");
+		if(null != startPositionLongDegres){
+			session.setStartPositionLongDegres(startPositionLongDegres.doubleValue());
+		}
 		session.setStopActivityTime((Long)mapSession.get("timestamp"));
 		session.setSubSport(Integer.valueOf((String)mapSession.get("subSport")));
 		session.setTotalAscent(Integer.valueOf((String)mapSession.get("totalAscent")));
@@ -250,7 +283,34 @@ public class ActivityServiceImpl implements ActivityService {
 
 	
 	
+	/**
+	 * Afin de corriger certaines valeurs
+	 * erronée ou non presente et d eviter de faire
+	 * plusieurs iterations sur la map de record
+	 * on le fait une fois pour toute
+	 */
+	void generateStatsFromMapRecord(){
+		
+	}
 	
+	private Coord getFirstLatLongData(){
+				
+		List<Map<String, Object>> listMapRecord = fitService.getFitActivityRecord("", 1);
+
+		for (Map<String, Object> mapRecord : listMapRecord) {
+			
+			if(null!=mapRecord.get("positionLatDegres") 
+					&& null!=mapRecord.get("positionLongDegres")){
+				Coord coord =  new Coord();								
+				coord.setLat(((BigDecimal)mapRecord.get("positionLatDegres")).doubleValue());
+				coord.setLng(((BigDecimal)mapRecord.get("positionLongDegres")).doubleValue());
+				
+				return coord;
+			}	
+		}
+		
+		return null;
+	}
 
 }
 

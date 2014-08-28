@@ -8,8 +8,17 @@ import org.infospray.runx.model.Session;
 
 public interface ActivityService {
 	
+	/**
+	 * retourne la liste des LAPS
+	 * @return
+	 */
 	public List<Lap>	getListLaps();
 	
+	
+	/**
+	 * retourne la liste de tous les enregistrements
+	 * @return
+	 */
 	public List<Record> getListRecords();
 	
 	/**

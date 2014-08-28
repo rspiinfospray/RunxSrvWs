@@ -28,7 +28,7 @@ public class ActivityDao {
 	Fit2Dao ftiDao;
 	
 
-	private static String FILENAME = "2014-07-24-19-48-26.fit";
+	private static String FILENAME = "2014-06-10-19-27-32.fit";
 
 
 	public Activity  getFullActivity(){
