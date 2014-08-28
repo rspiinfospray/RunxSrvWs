@@ -2,8 +2,8 @@ package org.infospray.runx.dao;
 
 import java.io.InputStream;
 
-import org.infospray.runx.fip.FileIdListener;
-import org.infospray.runx.fip.UserProfileListener;
+import org.infospray.runx.fit.FileIdListener;
+import org.infospray.runx.fit.UserProfileListener;
 import org.infospray.runx.fit.model.Totals;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

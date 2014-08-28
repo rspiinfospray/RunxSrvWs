@@ -2,14 +2,14 @@ package org.infospray.runx.dao;
 
 import java.io.InputStream;
 
-import org.infospray.runx.fip.CadenceZoneListener;
-import org.infospray.runx.fip.FileIdListener;
-import org.infospray.runx.fip.HrZoneListener;
-import org.infospray.runx.fip.MetZoneListener;
-import org.infospray.runx.fip.PowerZoneListener;
-import org.infospray.runx.fip.SpeedZoneListener;
-import org.infospray.runx.fip.SportListener;
-import org.infospray.runx.fip.ZonesTargetListener;
+import org.infospray.runx.fit.CadenceZoneListener;
+import org.infospray.runx.fit.FileIdListener;
+import org.infospray.runx.fit.HrZoneListener;
+import org.infospray.runx.fit.MetZoneListener;
+import org.infospray.runx.fit.PowerZoneListener;
+import org.infospray.runx.fit.SpeedZoneListener;
+import org.infospray.runx.fit.SportListener;
+import org.infospray.runx.fit.ZonesTargetListener;
 import org.infospray.runx.fit.model.Sport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

@@ -1,13 +1,14 @@
-package org.infospray.runx.fip;
+package org.infospray.runx.fit;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.garmin.fit.Field;
-import com.garmin.fit.UserProfileMesg;
-import com.garmin.fit.UserProfileMesgListener;
+import com.garmin.fit.LengthMesg;
+import com.garmin.fit.LengthMesgListener;
 
-public class UserProfileListener implements UserProfileMesgListener {
+public class LengthListener implements LengthMesgListener {
+
 
 	public Map<Integer,Map<String,Object>> data = new LinkedHashMap<Integer,Map<String,Object>>();
 
@@ -15,13 +16,12 @@ public class UserProfileListener implements UserProfileMesgListener {
 
 
 	@Override
-	public void onMesg(UserProfileMesg mesg) {
-
-		Map<String,Object> userProfile = new LinkedHashMap<String,Object>();
+	public void onMesg(LengthMesg mesg) {
+		Map<String,Object> length = new LinkedHashMap<String,Object>();
 
 		for(Field curField : mesg.getFields()){			
-			FitUtils.feedData(mesg, curField, userProfile);							
-			data.put(index, userProfile);			
+			FitUtils.feedData(mesg, curField, length);							
+			data.put(index, length);			
 		}
 
 		index++;	
@@ -34,6 +34,9 @@ public class UserProfileListener implements UserProfileMesgListener {
 	public void setData(Map<Integer, Map<String, Object>> data) {
 		this.data = data;
 	}
+
+
+
 
 
 }

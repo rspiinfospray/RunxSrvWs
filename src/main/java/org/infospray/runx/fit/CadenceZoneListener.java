@@ -1,13 +1,14 @@
-package org.infospray.runx.fip;
+package org.infospray.runx.fit;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.garmin.fit.CadenceZoneMesg;
+import com.garmin.fit.CadenceZoneMesgListener;
 import com.garmin.fit.Field;
-import com.garmin.fit.HrvMesg;
-import com.garmin.fit.HrvMesgListener;
 
-public class HrvListener implements HrvMesgListener {
+public class CadenceZoneListener implements CadenceZoneMesgListener {
+
 
 	public Map<Integer,Map<String,Object>> data = new LinkedHashMap<Integer,Map<String,Object>>();
 	
@@ -15,12 +16,12 @@ public class HrvListener implements HrvMesgListener {
 	
 
 	@Override
-	public void onMesg(HrvMesg mesg) {
-		Map<String,Object> hrv = new LinkedHashMap<String,Object>();
+	public void onMesg(CadenceZoneMesg mesg) {
+		Map<String,Object> lap = new LinkedHashMap<String,Object>();
 
 		for(Field curField : mesg.getFields()){			
-			FitUtils.feedData(mesg, curField, hrv);							
-			data.put(index, hrv);			
+			FitUtils.feedData(mesg, curField, lap);							
+			data.put(index, lap);			
 		}
 
 		index++;		
@@ -35,6 +36,10 @@ public class HrvListener implements HrvMesgListener {
 	public void setData(Map<Integer, Map<String, Object>> data) {
 		this.data = data;
 	}
+
+	
+	
+	
 
 	
 

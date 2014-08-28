@@ -1,20 +1,20 @@
-package org.infospray.runx.fip;
+package org.infospray.runx.fit;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.garmin.fit.ActivityMesg;
+import com.garmin.fit.ActivityMesgListener;
 import com.garmin.fit.Field;
-import com.garmin.fit.FileIdMesg;
-import com.garmin.fit.FileIdMesgListener;
 
-public class FileIdListener implements FileIdMesgListener {
+
+public class ActivityListener implements ActivityMesgListener  {
 
 
 	public Map<String,Object> data = new LinkedHashMap<String,Object>();
-	
 
 	@Override
-	public void onMesg(FileIdMesg mesg) {
+	public void onMesg(ActivityMesg mesg) {
 
 		for(Field curField : mesg.getFields()){			
 			FitUtils.feedData(mesg, curField, data);
@@ -26,10 +26,10 @@ public class FileIdListener implements FileIdMesgListener {
 		return data;
 	}
 
-
 	public void setData(Map<String, Object> data) {
 		this.data = data;
 	}
 
+	
 
 }

@@ -1,4 +1,4 @@
-package org.infospray.runx.fip;
+package org.infospray.runx.fit;
 
 import java.math.BigDecimal;
 import java.util.Map;

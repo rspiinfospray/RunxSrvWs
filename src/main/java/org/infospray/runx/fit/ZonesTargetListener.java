@@ -1,13 +1,13 @@
-package org.infospray.runx.fip;
+package org.infospray.runx.fit;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.garmin.fit.Field;
-import com.garmin.fit.SportMesg;
-import com.garmin.fit.SportMesgListener;
+import com.garmin.fit.ZonesTargetMesg;
+import com.garmin.fit.ZonesTargetMesgListener;
 
-public class SportListener implements SportMesgListener {
+public class ZonesTargetListener implements ZonesTargetMesgListener {
 
 
 	public Map<Integer,Map<String,Object>> data = new LinkedHashMap<Integer,Map<String,Object>>();
@@ -16,12 +16,12 @@ public class SportListener implements SportMesgListener {
 	
 
 	@Override
-	public void onMesg(SportMesg mesg) {
-		Map<String,Object> sport = new LinkedHashMap<String,Object>();
+	public void onMesg(ZonesTargetMesg mesg) {
+		Map<String,Object> lap = new LinkedHashMap<String,Object>();
 
 		for(Field curField : mesg.getFields()){			
-			FitUtils.feedData(mesg, curField, sport);							
-			data.put(index, sport);			
+			FitUtils.feedData(mesg, curField, lap);							
+			data.put(index, lap);			
 		}
 
 		index++;		
