@@ -148,7 +148,7 @@ public class ActivityServiceImpl implements ActivityService {
 				for (Record record : listRecord) {
 					
 					if(cpt == cptgo){
-						record.setAltitude(currentResult.getElevation());
+						record.setFixedAltitude(currentResult.getElevation());
 					}					
 					cpt++;
 				}

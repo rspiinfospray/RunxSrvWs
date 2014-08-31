@@ -4,7 +4,8 @@ public enum AxisTypeEnum {
 	
 	
 	
-	DATETIME("datetime");
+	DATETIME("datetime"),
+	SPLINE("spline");
 	
 	private String libelle;
 

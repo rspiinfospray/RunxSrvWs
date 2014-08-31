@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.infospray.runx.hightchart.model.AxisTypeEnum;
+import org.infospray.runx.hightchart.model.Legend;
 import org.infospray.runx.hightchart.model.LineTimeChart;
 import org.infospray.runx.hightchart.model.Series;
 import org.infospray.runx.model.Record;
@@ -125,10 +126,15 @@ public class ChartController {
 	
 
 		LineTimeChart lineTime = new LineTimeChart();
+		
+		Legend legende = new Legend();
+		legende.setEnabled(true);
+		lineTime.setLegend(legende);
 		lineTime.getChart().setZoomType("x");
+		lineTime.getChart().setType(AxisTypeEnum.SPLINE.getLibelle());
 		lineTime.getTitle().setText("Topographie du parcours");
 		lineTime.getSubtitle().setText("Altitude");
-		//lineTime.getxAxis().setType(AxisTypeEnum.DATETIME.getLibelle());
+		//lineTime.getxAxis().setType(AxisTypeEnum.SPLINE.getLibelle());
 		lineTime.getyAxis().getTitle().setText("Mètres");
 		
 		lineTime.getPlotOptions().getArea().getFillColor().getLinearGradient().add(0);
@@ -151,19 +157,32 @@ public class ChartController {
 		lineTime.getPlotOptions().getArea().setLineWidth(1);
 		lineTime.getPlotOptions().getArea().getStates().getHover().setLineWidth(1);
 
-		Series series = new Series();
-		series.setName("Altitude en mètres");
-		series.setColor("#096A09");
+		//List<Series> series = new ArrayList<Series>();
+		
+		Series seriesAltitude = new Series();
+		seriesAltitude.setName("Altitude en mètres (Source : Montre Garmin)");
+		seriesAltitude.setColor("#096A09");
+		
+		Series seriesAltitudeFixed = new Series();
+		seriesAltitudeFixed.setName("Altitude en mètres (Source : Google)");
+		seriesAltitudeFixed.setColor("#00FF00");
 
 		for (Record currentRecord : activityService.getListRecords()) {
 			
 			List<Object> list = new ArrayList<Object>();
 			list.add(currentRecord.getDistance());
 			list.add(currentRecord.getAltitude());
-			series.getData().add(list);
+			
+			List<Object> listFixedAltitude = new ArrayList<Object>();
+			listFixedAltitude.add(currentRecord.getDistance());
+			listFixedAltitude.add(currentRecord.getFixedAltitude());
+			
+			seriesAltitude.getData().add(list);
+			seriesAltitudeFixed.getData().add(listFixedAltitude);
 		}
 		
-		lineTime.getSeries().add(series);
+		lineTime.getSeries().add(seriesAltitude);
+		lineTime.getSeries().add(seriesAltitudeFixed);
 		
 			
 		return lineTime;

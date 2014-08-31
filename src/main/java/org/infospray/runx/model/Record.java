@@ -7,6 +7,7 @@ public class Record {
 	private Double positionLongDegres;
 	private Double distance;
 	private Double altitude;
+	private Double fixedAltitude;
 	private Double speed;
 	private Integer speedIndice;
 	private String heure;
@@ -77,7 +78,15 @@ public class Record {
 	public void setHeartRate(Integer heartRate) {
 		this.heartRate = heartRate;
 	}
+	public Double getFixedAltitude() {
+		return fixedAltitude;
+	}
+	public void setFixedAltitude(Double fixedAltitude) {
+		this.fixedAltitude = fixedAltitude;
+	}
+	
+	
 
-
+	
 
 }

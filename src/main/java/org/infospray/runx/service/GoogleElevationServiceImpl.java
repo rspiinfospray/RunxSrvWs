@@ -47,8 +47,6 @@ public class GoogleElevationServiceImpl implements GoogleElevationService {
 				listGoogleElevation.add(googleElevation);
 				url = URL_GOOGLE_EVEVATION;
 			}
-
-
 		}
 
 
