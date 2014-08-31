@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.infospray.runx.model.Coord;
+import org.infospray.runx.googleelevation.model.GoogleElevation;
+import org.infospray.runx.googleelevation.model.Result;
+import org.infospray.runx.model.Location;
 import org.infospray.runx.model.Lap;
 import org.infospray.runx.model.LapSpeedFixing;
 import org.infospray.runx.model.Record;
@@ -20,6 +22,9 @@ public class ActivityServiceImpl implements ActivityService {
 
 	@Autowired
 	FitService fitService;
+	
+	@Autowired
+	GoogleElevationService elevationService;
 
 
 	@Override
@@ -52,8 +57,9 @@ public class ActivityServiceImpl implements ActivityService {
 			if(null != startPositionLatDegres && null != startPositionLongDegres){
 				lap.setStartPositionLatDegres(startPositionLatDegres.doubleValue());
 				lap.setStartPositionLongDegres(startPositionLongDegres.doubleValue());
-			}else{
-				Coord coord = this.getFirstLatLongData();
+			}
+			else{
+				Location coord = this.getFirstLocationData();
 				lap.setStartPositionLatDegres(coord.getLat());
 				lap.setStartPositionLongDegres(coord.getLng());
 			}
@@ -84,11 +90,12 @@ public class ActivityServiceImpl implements ActivityService {
 			if(mapRecord.containsKey("positionLatDegres")){
 				
 				Record record = new Record();
-
-				record.setAltitude((String)mapRecord.get("altitude"));
-				record.setDistance((String)mapRecord.get("distance"));
-				record.setPositionLatDegres(((BigDecimal)mapRecord.get("positionLatDegres")).doubleValue());
-				record.setPositionLongDegres(((BigDecimal)mapRecord.get("positionLongDegres")).doubleValue());
+				
+				record.setAltitude(BigDecimal.valueOf(Double.valueOf((String)mapRecord.get("altitude"))).setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue());
+				record.setDistance(Double.valueOf((String)mapRecord.get("distance")));
+				
+				record.setPositionLatDegres(((BigDecimal)mapRecord.get("positionLatDegres")).setScale(8,BigDecimal.ROUND_HALF_DOWN).doubleValue());
+				record.setPositionLongDegres(((BigDecimal)mapRecord.get("positionLongDegres")).setScale(8,BigDecimal.ROUND_HALF_DOWN).doubleValue());
 				record.setHeartRate(Integer.valueOf((String)mapRecord.get("heartRate")));
 				
 				String speed = (String)mapRecord.get("speed");
@@ -113,10 +120,45 @@ public class ActivityServiceImpl implements ActivityService {
 
 
 		this.generateSpeedIndice(listRecord);
+		this.fixeElevation(listRecord);
+		
 		return listRecord;
 	}
 	
 	
+	/**
+	 * Correction de l altitude en fonction des données topographique de google
+	 * @param listRecord
+	 */
+	private void fixeElevation(List<Record> listRecord) {
+		
+		List<Location> listElevation = new ArrayList<Location>();
+		for (Record record : listRecord) {
+			listElevation.add(new Location(record.getPositionLatDegres(),record.getPositionLongDegres()));
+		}
+		
+		List<GoogleElevation> ListGoogleElevation =  elevationService.getElevationByListCoord(listElevation);
+		
+		int cptgo = 0;
+		for (GoogleElevation googleElevation : ListGoogleElevation) {
+			
+			for(Result currentResult : googleElevation.getResults()){
+				
+				int cpt = 0;
+				for (Record record : listRecord) {
+					
+					if(cpt == cptgo){
+						record.setAltitude(currentResult.getElevation());
+					}					
+					cpt++;
+				}
+				cptgo++;	
+			}	
+		}
+		
+		
+	}
+
 	public double getMaxSpeed(){
 
 		List<Map<String, Object>> listMapRecord = fitService.getFitActivityRecord("", 1);
@@ -294,7 +336,7 @@ public class ActivityServiceImpl implements ActivityService {
 		
 	}
 	
-	private Coord getFirstLatLongData(){
+	private Location getFirstLocationData(){
 				
 		List<Map<String, Object>> listMapRecord = fitService.getFitActivityRecord("", 1);
 
@@ -302,7 +344,7 @@ public class ActivityServiceImpl implements ActivityService {
 			
 			if(null!=mapRecord.get("positionLatDegres") 
 					&& null!=mapRecord.get("positionLongDegres")){
-				Coord coord =  new Coord();								
+				Location coord =  new Location();								
 				coord.setLat(((BigDecimal)mapRecord.get("positionLatDegres")).doubleValue());
 				coord.setLng(((BigDecimal)mapRecord.get("positionLongDegres")).doubleValue());
 				

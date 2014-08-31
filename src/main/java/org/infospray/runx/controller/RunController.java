@@ -10,8 +10,10 @@ import org.infospray.runx.fit.model.Settings;
 import org.infospray.runx.fit.model.Sport;
 import org.infospray.runx.fit.model.Totals;
 import org.infospray.runx.fit.model.Weight;
+import org.infospray.runx.model.Record;
 import org.infospray.runx.rest.BuildRestResponse;
 import org.infospray.runx.rest.ResponseBody;
+import org.infospray.runx.service.ActivityService;
 import org.infospray.runx.service.FitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,10 @@ public class RunController {
 
 	@Autowired
 	private FitService fitService;
+	
+	
+	@Autowired
+	private ActivityService activityService;
 
 
 	/**
@@ -72,9 +78,9 @@ public class RunController {
 	}
 	
 	@RequestMapping("/{user}/activity/{id}/record")
-	public ResponseEntity<ResponseBody<List<Map<String, Object>>>> getFitActivityRecord(@PathVariable String user, @PathVariable long id){	
+	public ResponseEntity<ResponseBody<List<Record>>> getFitActivityRecord(@PathVariable String user, @PathVariable long id){	
 			
-		return  BuildRestResponse.build(fitService.getFitActivityRecord(user,id));
+		return  BuildRestResponse.build(activityService.getListRecords());
 	}
 	
 	@RequestMapping("/{user}/activity/{id}/event")

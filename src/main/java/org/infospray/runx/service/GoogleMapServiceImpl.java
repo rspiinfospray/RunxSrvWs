@@ -50,7 +50,7 @@ public class GoogleMapServiceImpl implements GoogleMapService {
 			Feature feature = new Feature();
 			Point point = new Point(Double.valueOf(currentLap.getEndPositionLongDegres()),Double.valueOf(currentLap.getEndPositionLatDegres()));			
 			feature.setGeometry(point);					
-			feature.setProperty("avgVitesse", currentLap.getAvgSpeed());	
+			feature.setProperty("avgVitesse", currentLap.getAvgSpeed());
 			feature.setProperty("heure", currentLap.getBeginLapTime());
 			feature.setProperty("lap", String.valueOf(cptLap + 1));
 			if(nbLap == cptLap + 1){

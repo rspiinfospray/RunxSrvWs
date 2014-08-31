@@ -5,8 +5,8 @@ public class Record {
 
 	private Double positionLatDegres;
 	private Double positionLongDegres;
-	private String distance;
-	private String altitude;
+	private Double distance;
+	private Double altitude;
 	private Double speed;
 	private Integer speedIndice;
 	private String heure;
@@ -29,19 +29,18 @@ public class Record {
 		this.positionLongDegres = positionLongDegres;
 	}
 
-	public String getDistance() {
+	public Double getDistance() {
 		return distance;
 	}
-	public void setDistance(String distance) {
+	public void setDistance(Double distance) {
 		this.distance = distance;
 	}
-	public String getAltitude() {
+	public Double getAltitude() {
 		return altitude;
 	}
-	public void setAltitude(String altitude) {
+	public void setAltitude(Double altitude) {
 		this.altitude = altitude;
 	}
-	
 	public Double getSpeed() {
 		return speed;
 	}
@@ -79,10 +78,6 @@ public class Record {
 		this.heartRate = heartRate;
 	}
 
-	
-	
-	
-	
-	
+
 
 }

@@ -120,5 +120,55 @@ public class ChartController {
 	}
 	
 	
+	@RequestMapping("/{user}/activity/{id}/altitude/")
+	LineTimeChart getAltitudeChart(){
+	
+
+		LineTimeChart lineTime = new LineTimeChart();
+		lineTime.getChart().setZoomType("x");
+		lineTime.getTitle().setText("Topographie du parcours");
+		lineTime.getSubtitle().setText("Altitude");
+		//lineTime.getxAxis().setType(AxisTypeEnum.DATETIME.getLibelle());
+		lineTime.getyAxis().getTitle().setText("Mètres");
+		
+		lineTime.getPlotOptions().getArea().getFillColor().getLinearGradient().add(0);
+		lineTime.getPlotOptions().getArea().getFillColor().getLinearGradient().add(0);
+		lineTime.getPlotOptions().getArea().getFillColor().getLinearGradient().add(0);
+		lineTime.getPlotOptions().getArea().getFillColor().getLinearGradient().add(1);
+		
+		List<Integer> litStop1 = new ArrayList<Integer>();
+		litStop1.add(0);
+		litStop1.add(124181236);
+		
+		List<Integer> litStop2 = new ArrayList<Integer>();
+		litStop2.add(1);
+		litStop2.add(124181236);
+		lineTime.getPlotOptions().getArea().getFillColor().getStops().add(litStop1);
+		lineTime.getPlotOptions().getArea().getFillColor().getStops().add(litStop2);
+
+		
+		lineTime.getPlotOptions().getArea().getMarker().setRadius(2);
+		lineTime.getPlotOptions().getArea().setLineWidth(1);
+		lineTime.getPlotOptions().getArea().getStates().getHover().setLineWidth(1);
+
+		Series series = new Series();
+		series.setName("Altitude en mètres");
+		series.setColor("#096A09");
+
+		for (Record currentRecord : activityService.getListRecords()) {
+			
+			List<Object> list = new ArrayList<Object>();
+			list.add(currentRecord.getDistance());
+			list.add(currentRecord.getAltitude());
+			series.getData().add(list);
+		}
+		
+		lineTime.getSeries().add(series);
+		
+			
+		return lineTime;
+	}
+	
+	
 
 }
