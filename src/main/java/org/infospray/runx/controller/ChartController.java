@@ -12,6 +12,7 @@ import org.infospray.runx.hightchart.model.Series;
 import org.infospray.runx.model.Record;
 import org.infospray.runx.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,16 +24,19 @@ public class ChartController {
 	@Autowired
 	ActivityService activityService;
 	
-	@RequestMapping("/{user}/activity/{id}/speed/")
-	LineTimeChart getSpeedChart(){
 	
+	@RequestMapping("/{user}/activity/{id}/speed/")
+	LineTimeChart getSpeedChart(@PathVariable String user, @PathVariable long id){
 
 		LineTimeChart lineTime = new LineTimeChart();
+		Legend legende = new Legend();
+		legende.setEnabled(true);
+		lineTime.setLegend(legende);
 		lineTime.getChart().setZoomType("x");
 		lineTime.getTitle().setText("Vitesse");
-		lineTime.getSubtitle().setText("Fluctuation de la vitesse en Kilometre/heure");
+		lineTime.getSubtitle().setText("Fluctuation de la vitesse en Kilometre/heure ou en Minutes au Kilomètre");
 		lineTime.getxAxis().setType(AxisTypeEnum.DATETIME.getLibelle());
-		lineTime.getyAxis().getTitle().setText("Kilometre/Heure");
+		lineTime.getyAxis().getTitle().setText("Kilomètre/Heure ou Minutes au Kilomètre");
 		
 		lineTime.getPlotOptions().getArea().getFillColor().getLinearGradient().add(0);
 		lineTime.getPlotOptions().getArea().getFillColor().getLinearGradient().add(0);
@@ -54,25 +58,35 @@ public class ChartController {
 		lineTime.getPlotOptions().getArea().setLineWidth(1);
 		lineTime.getPlotOptions().getArea().getStates().getHover().setLineWidth(1);
 
-		Series series = new Series();
-		series.setName("Kilometre/Heure");
+		Series seriesKmHeure = new Series();
+		seriesKmHeure.setName("Kilomètre/Heure");
+		
+		Series seriesMinutKilo = new Series();
+		seriesMinutKilo.setName("Minutes/Kilomètre");
 
-		for (Record currentRecord : activityService.getListRecords()) {
+		for (Record currentRecord : activityService.getListRecords(user, id)) {
 			
 			List<Object> list = new ArrayList<Object>();
 			list.add(currentRecord.getTimestamp() * 1000);
 			list.add(currentRecord.getSpeed());
-			series.getData().add(list);
+			
+			List<Object> listMinKilo = new ArrayList<Object>();
+			listMinKilo.add(currentRecord.getTimestamp() * 1000);
+			listMinKilo.add(currentRecord.getSpeedMinKilo());
+			
+			seriesKmHeure.getData().add(list);
+			seriesMinutKilo.getData().add(listMinKilo);
 		}
 		
-		lineTime.getSeries().add(series);
+		lineTime.getSeries().add(seriesKmHeure);
+		lineTime.getSeries().add(seriesMinutKilo);
 		
 			
 		return lineTime;
 	}
 	
 	@RequestMapping("/{user}/activity/{id}/bpm/")
-	LineTimeChart getBpmChart(){
+	LineTimeChart getBpmChart(@PathVariable String user, @PathVariable long id){
 	
 
 		LineTimeChart lineTime = new LineTimeChart();
@@ -106,7 +120,7 @@ public class ChartController {
 		series.setName("BPM");
 		series.setColor("#B9121B");
 
-		for (Record currentRecord : activityService.getListRecords()) {
+		for (Record currentRecord : activityService.getListRecords(user, id)) {
 			
 			List<Object> list = new ArrayList<Object>();
 			list.add(currentRecord.getTimestamp() * 1000);
@@ -122,7 +136,7 @@ public class ChartController {
 	
 	
 	@RequestMapping("/{user}/activity/{id}/altitude/")
-	LineTimeChart getAltitudeChart(){
+	LineTimeChart getAltitudeChart(@PathVariable String user, @PathVariable long id){
 	
 
 		LineTimeChart lineTime = new LineTimeChart();
@@ -167,7 +181,7 @@ public class ChartController {
 		seriesAltitudeFixed.setName("Altitude en mètres (Source : Google)");
 		seriesAltitudeFixed.setColor("#00FF00");
 
-		for (Record currentRecord : activityService.getListRecords()) {
+		for (Record currentRecord : activityService.getListRecords(user, id)) {
 			
 			List<Object> list = new ArrayList<Object>();
 			list.add(currentRecord.getDistance());

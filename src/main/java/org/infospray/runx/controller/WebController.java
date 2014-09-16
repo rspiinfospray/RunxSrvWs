@@ -17,11 +17,17 @@ public class WebController {
 	@RequestMapping("/map/")
 	String getMap(Model model){
 		
-		model.addAttribute("avgSpeed", activityService.getAvgSpeed());	
-		model.addAttribute("maxSpeed", activityService.getMaxSpeed());
-		model.addAttribute("distanceTotal", activityService.getSession().getTotalDistance());
-		model.addAttribute("caloriesTotal", activityService.getSession().getTotalCalories());
-		model.addAttribute("laps", activityService.getListLaps());		
+		String user = "Amne";
+		
+		long id = 20140824101122l;
+		
+		model.addAttribute("fileId", String.valueOf(id));
+		model.addAttribute("startLocation", activityService.getFirstLocation(user, id));	
+		model.addAttribute("avgSpeed", activityService.getAvgSpeed(user, id));	
+		model.addAttribute("maxSpeed", activityService.getMaxSpeed(user, id));
+		model.addAttribute("distanceTotal", activityService.getSession(user, id).getTotalDistance());
+		model.addAttribute("caloriesTotal", activityService.getSession(user, id).getTotalCalories());
+		model.addAttribute("laps", activityService.getListLaps(user, id));		
 		return "geo";
 	}
 

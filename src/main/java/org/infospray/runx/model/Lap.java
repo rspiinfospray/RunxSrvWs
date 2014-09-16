@@ -14,6 +14,8 @@ public class Lap {
 	private String totalCalories;
 	private Double avgSpeed;
 	private Double maxSpeed;
+	private Double avgSpeedMinKilo;
+	private Double maxSpeedMinKilo;
 	private String totalAscent;
 	private String totalDescent;
 	private String eventLibelle;
@@ -194,6 +196,22 @@ public class Lap {
 
 	public void setEndLapTime(String endLapTime) {
 		this.endLapTime = endLapTime;
+	}
+
+	public Double getAvgSpeedMinKilo() {
+		return avgSpeedMinKilo;
+	}
+
+	public void setAvgSpeedMinKilo(Double avgSpeedMinKilo) {
+		this.avgSpeedMinKilo = avgSpeedMinKilo;
+	}
+
+	public Double getMaxSpeedMinKilo() {
+		return maxSpeedMinKilo;
+	}
+
+	public void setMaxSpeedMinKilo(Double maxSpeedMinKilo) {
+		this.maxSpeedMinKilo = maxSpeedMinKilo;
 	}
 
 	

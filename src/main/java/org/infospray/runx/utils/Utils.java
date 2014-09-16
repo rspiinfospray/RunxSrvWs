@@ -14,12 +14,28 @@ public class Utils {
 	public static String timestampToDateString(long timestamp){
 		
 		Date date = new Date(timestamp*1000L); // *1000 is to convert seconds to milliseconds
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"); // the format of your date
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss"); // the format of your date
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT+1"));
 		String formattedDate = sdf.format(date);
 		return formattedDate;
 	}
 
+	public static double kilometreHeureToMinutesKilometre(double kilometreHeure){
+		
+		if(kilometreHeure == 0.0d){
+			return kilometreHeure;
+		}
+		
+		double secondeKilo = 3600d /kilometreHeure;
+		Double minKil = secondeKilo / 60d;
+		Double partiDecimal = minKil.doubleValue() - Double.valueOf(minKil.intValue());
+		partiDecimal = partiDecimal * 60d;
+		
+		return Double.valueOf(String.valueOf(minKil.intValue())+"."+String.valueOf(partiDecimal.intValue()));
+		
+	}
+	
+	
 	public static Double mettreSecondeToKilometreHeure(String mettreSeconde) {
 		
 		BigDecimal converter = new BigDecimal(3.6d);

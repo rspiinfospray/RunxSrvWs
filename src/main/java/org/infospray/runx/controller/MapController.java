@@ -3,6 +3,7 @@ package org.infospray.runx.controller;
 import org.geojson.GeoJsonObject;
 import org.infospray.runx.service.GoogleMapService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,9 +17,9 @@ public class MapController {
 	GoogleMapService gMapService;
 	
 	@RequestMapping("/{user}/activity/{id}/")
-	GeoJsonObject getJsonCoordMap(){
+	GeoJsonObject getJsonCoordMap(@PathVariable String user, @PathVariable long id){
 		
-		return gMapService.getGeoJsonMap();
+		return gMapService.getGeoJsonMap(user,id);
 	}
 
 }

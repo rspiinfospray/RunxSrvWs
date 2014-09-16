@@ -20,21 +20,18 @@ public class GoogleMapServiceImpl implements GoogleMapService {
 
 
 	@Autowired
-	FitService fitService;
-	
-	@Autowired
 	ActivityService activityService;
 
 
 	@Override
-	public GeoJsonObject getGeoJsonMap() {
+	public GeoJsonObject getGeoJsonMap(String user, long id) {
 	
 		FeatureCollection featureCollection = new FeatureCollection();
 		
 		
 		int cptLap = 0;
-		int nbLap = activityService.getListLaps().size();
-		for(Lap currentLap : activityService.getListLaps()){
+		int nbLap = activityService.getListLaps(user, id).size();
+		for(Lap currentLap : activityService.getListLaps(user, id)){
 			
 			if(cptLap == 0){
 				Feature feature = new Feature();
@@ -61,7 +58,7 @@ public class GoogleMapServiceImpl implements GoogleMapService {
 			cptLap++;
 		}
 		
-		List<Record> listRecord = activityService.getListRecords();
+		List<Record> listRecord = activityService.getListRecords(user, id);
 		int sizeListRecord = listRecord.size();
 		
 		for(int cpt = 0 ; cpt != sizeListRecord; cpt++){

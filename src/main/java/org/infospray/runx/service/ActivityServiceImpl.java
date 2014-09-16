@@ -21,24 +21,25 @@ public class ActivityServiceImpl implements ActivityService {
 
 
 	@Autowired
-	FitService fitService;
+	RawFitService rawFitService;
 	
 	@Autowired
 	GoogleElevationService elevationService;
 
-
+	
 	@Override
-	public List<Lap> getListLaps() {
-		List<Map<String, Object>> listMapLap = fitService.getFitActivityLap("", 1);
+	public List<Lap> getListLaps(String user, long id) {
+		List<Map<String, Object>> listMapLap = rawFitService.getMapLap(user, id);
 
 		List<Lap> listLaps = new ArrayList<Lap>();
 		
-		List<LapSpeedFixing> listLapSpeedFixing = this.generateFixedSpeedLap();
+		List<LapSpeedFixing> listLapSpeedFixing = this.generateFixedSpeedLap(user, id);
 
 		int cpt = 0;
 		for (Map<String, Object> mapLap : listMapLap) {
 			Lap lap = new Lap();
 
+			lap.setAvgSpeedMinKilo(Utils.kilometreHeureToMinutesKilometre(listLapSpeedFixing.get(cpt).getAvg()));
 			lap.setAvgSpeed(listLapSpeedFixing.get(cpt).getAvg());
 			lap.setEndPositionLatDegres(((BigDecimal)mapLap.get("endPositionLatDegres")).doubleValue());			
 			lap.setEndPositionLongDegres(((BigDecimal)mapLap.get("endPositionLongDegres")).doubleValue());			
@@ -59,7 +60,7 @@ public class ActivityServiceImpl implements ActivityService {
 				lap.setStartPositionLongDegres(startPositionLongDegres.doubleValue());
 			}
 			else{
-				Location coord = this.getFirstLocationData();
+				Location coord = this.getFirstLocation(user, id);
 				lap.setStartPositionLatDegres(coord.getLat());
 				lap.setStartPositionLongDegres(coord.getLng());
 			}
@@ -79,9 +80,9 @@ public class ActivityServiceImpl implements ActivityService {
 	}
 
 	@Override
-	public List<Record> getListRecords() {
+	public List<Record> getListRecords(String user, long id) {
 
-		List<Map<String, Object>> listMapRecord = fitService.getFitActivityRecord("", 1);
+		List<Map<String, Object>> listMapRecord = rawFitService.getMapRecord(user, id);
 		List<Record> listRecord = new ArrayList<Record>();
 		Double previousSpeed = 0d;
 
@@ -96,18 +97,24 @@ public class ActivityServiceImpl implements ActivityService {
 				
 				record.setPositionLatDegres(((BigDecimal)mapRecord.get("positionLatDegres")).setScale(8,BigDecimal.ROUND_HALF_DOWN).doubleValue());
 				record.setPositionLongDegres(((BigDecimal)mapRecord.get("positionLongDegres")).setScale(8,BigDecimal.ROUND_HALF_DOWN).doubleValue());
-				record.setHeartRate(Integer.valueOf((String)mapRecord.get("heartRate")));
+				
+				if(null !=  mapRecord.get("heartRate")){
+					record.setHeartRate(Integer.valueOf((String)mapRecord.get("heartRate")));
+				}
 				
 				String speed = (String)mapRecord.get("speed");
 				if(null == speed){
 					speed = "0.0";
 				}				
-				Double dSpeed = Utils.mettreSecondeToKilometreHeure(speed);				
+				Double dSpeed = Utils.mettreSecondeToKilometreHeure(speed);
+				Double minuteAuKilo = Utils.kilometreHeureToMinutesKilometre(dSpeed);
 				if(dSpeed.doubleValue() > Utils.MAX_SPEED_RUNNING_LIMIT){
 					record.setSpeed(previousSpeed);
+					record.setSpeedMinKilo(Utils.kilometreHeureToMinutesKilometre(previousSpeed));
 					record.setFixedSpeed(true);
 				}else{
 					record.setSpeed(dSpeed);
+					record.setSpeedMinKilo(Utils.kilometreHeureToMinutesKilometre(dSpeed));
 					previousSpeed = dSpeed;
 				}
 				record.setHeure(Utils.timestampToDateString(((Long)mapRecord.get("timestamp")).intValue()));
@@ -119,7 +126,7 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 
 
-		this.generateSpeedIndice(listRecord);
+		this.generateSpeedIndice(listRecord, user, id);
 		this.fixeElevation(listRecord);
 		
 		return listRecord;
@@ -159,9 +166,9 @@ public class ActivityServiceImpl implements ActivityService {
 		
 	}
 
-	public double getMaxSpeed(){
+	public double getMaxSpeed(String user, long id){
 
-		List<Map<String, Object>> listMapRecord = fitService.getFitActivityRecord("", 1);
+		List<Map<String, Object>> listMapRecord = rawFitService.getMapRecord(user, id);
 		double maxSpeed = 0d;
 
 		for (Map<String, Object> mapRecord : listMapRecord) {
@@ -177,11 +184,11 @@ public class ActivityServiceImpl implements ActivityService {
 		return maxSpeed;
 	}
 	
-	public double getAvgSpeed(){
+	public double getAvgSpeed(String user, long id){
 		
 		double avgSpeed = 0d;
 		
-		List<Map<String, Object>> listMapRecord = fitService.getFitActivityRecord("", 1);
+		List<Map<String, Object>> listMapRecord = rawFitService.getMapRecord(user, id);
 		int nbRecord = listMapRecord.size();
 		int nbValidRecord = nbRecord;
 		for (Map<String, Object> mapRecord : listMapRecord) {
@@ -205,9 +212,9 @@ public class ActivityServiceImpl implements ActivityService {
 	
 
 
-	public List<LapSpeedFixing> generateFixedSpeedLap(){
+	public List<LapSpeedFixing> generateFixedSpeedLap(String user, long id){
 		
-		List<Map<String, Object>> listMapLap = fitService.getFitActivityLap("", 1);
+		List<Map<String, Object>> listMapLap = rawFitService.getMapLap(user, id);
 
 		List<LapSpeedFixing> listLapSpeedFixing =  new ArrayList<LapSpeedFixing>();
 		
@@ -221,7 +228,7 @@ public class ActivityServiceImpl implements ActivityService {
 		double avgSpeed = 0d;
 		double maxSpeed = 0d;
 		
-		List<Map<String, Object>> listMapRecord = fitService.getFitActivityRecord("", 1);		
+		List<Map<String, Object>> listMapRecord = rawFitService.getMapRecord(user, id);		
 		LapSpeedFixing currentLapFixed =  null;
 		int recordCpt = 0;
 		
@@ -259,7 +266,11 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 		}
 		
-		listLapSpeedFixing.get(listLapSpeedFixing.size() - 1).setAvg(BigDecimal.valueOf(avgSpeed / recordCpt).setScale(2,BigDecimal.ROUND_HALF_DOWN).doubleValue());
+		if(recordCpt == 0){
+			recordCpt = 1;
+		}
+		double avg = BigDecimal.valueOf(avgSpeed / recordCpt).setScale(2,BigDecimal.ROUND_HALF_DOWN).doubleValue();
+		listLapSpeedFixing.get(listLapSpeedFixing.size() - 1).setAvg(avg);
 		listLapSpeedFixing.get(listLapSpeedFixing.size() - 1).setMaxSpeed(BigDecimal.valueOf(maxSpeed).setScale(2,BigDecimal.ROUND_HALF_DOWN).doubleValue());
 		
 		return listLapSpeedFixing;		
@@ -279,9 +290,9 @@ public class ActivityServiceImpl implements ActivityService {
 		return null;
 	}
 
-	private void generateSpeedIndice(List<Record> listRecord){
+	private void generateSpeedIndice(List<Record> listRecord, String user, long id){
 
-		double maxSpeed = this.getMaxSpeed();
+		double maxSpeed = this.getMaxSpeed(user, id);
 
 		for (Record record : listRecord) {
 			Double  speed = Double.valueOf(record.getSpeed());
@@ -291,9 +302,9 @@ public class ActivityServiceImpl implements ActivityService {
 	}
 
 	@Override
-	public Session getSession() {
+	public Session getSession(String user, long id) {
 		
-		Map<String,Object> mapSession = fitService.getFitActivitySession("", 1);
+		Map<String,Object> mapSession = rawFitService.getSession(user, id);
 		Session session = new Session();
 		session.setAvgSpeed(Utils.mettreSecondeToKilometreHeure((String)mapSession.get("avgSpeed")));
 		session.setEvent(Integer.valueOf((String)mapSession.get("event")));
@@ -336,9 +347,13 @@ public class ActivityServiceImpl implements ActivityService {
 		
 	}
 	
-	private Location getFirstLocationData(){
+	/**
+	 * trouve la premiere position valide dans les records
+	 * @return
+	 */
+	public Location getFirstLocation(String user, long id){
 				
-		List<Map<String, Object>> listMapRecord = fitService.getFitActivityRecord("", 1);
+		List<Map<String, Object>> listMapRecord = rawFitService.getMapRecord(user, id);
 
 		for (Map<String, Object> mapRecord : listMapRecord) {
 			

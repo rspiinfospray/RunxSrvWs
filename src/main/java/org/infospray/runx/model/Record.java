@@ -9,6 +9,7 @@ public class Record {
 	private Double altitude;
 	private Double fixedAltitude;
 	private Double speed;
+	private Double speedMinKilo;
 	private Integer speedIndice;
 	private String heure;
 	private Boolean fixedSpeed;
@@ -83,6 +84,12 @@ public class Record {
 	}
 	public void setFixedAltitude(Double fixedAltitude) {
 		this.fixedAltitude = fixedAltitude;
+	}
+	public Double getSpeedMinKilo() {
+		return speedMinKilo;
+	}
+	public void setSpeedMinKilo(Double speedMinKilo) {
+		this.speedMinKilo = speedMinKilo;
 	}
 	
 	

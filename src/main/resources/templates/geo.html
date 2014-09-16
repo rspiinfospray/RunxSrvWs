@@ -36,14 +36,22 @@ html, body, #mapgoogle {
 }
 </style>
 
-<script>
+<script th:inline="javascript">
+
 /*<![CDATA[*/
+           
+           
+var lat= /*[[${startLocation.lat}]]*/ 'value';
+var lng= /*[[${startLocation.lng}]]*/ 'value';
+var fileId = /*[[${fileId}]]*/ '20140824101122';
 var map;
+
 function initialize() {
+	
   // Create a simple map.
   map = new google.maps.Map(document.getElementById('mapgoogle'), {
     zoom: 14,
-    center: {lat:48.901945,lng: 2.274179},
+    center: new google.maps.LatLng(lat,lng),
     geodesic: true
   });
 
@@ -53,13 +61,11 @@ function initialize() {
   });
   
   // Load a GeoJSON from the same server as our demo.
-  map.data.loadGeoJson('http://localhost:8080/json/googlemap/amne/activity/84887/');
+  map.data.loadGeoJson('http://localhost:8080/json/googlemap/Amne/activity/'+fileId+'/');
   
   map.data.addListener('click', function(event) {
 	  
-	  
-	  	var content = $('<div/>');
-	  	
+	  	var content = $('<div/>');	  	
 	  	var lap = event.feature.getProperty('lap');
 	  	if(lap != null){
 	  		content.append('<div>'+"Kilomètre : "+  lap+'</div>');
@@ -80,15 +86,13 @@ function initialize() {
 	  	if(speedIndice !=  null){
 	  		content.append('<div>'+"Indice vitesse : "+  speedIndice+' %</div>');
   		}
-	  	
 	  	var vitesse = event.feature.getProperty('vitesse');
 	  	if(vitesse !=  null){
 	  		content.append('<div>'+"Vitesse : "+  vitesse+' Km/h</div>');
   		}
 	  	
 	  	content.append('<div>'+"Heure : "+  event.feature.getProperty('heure')+'</div>');
-	  	
-	  	
+	  
 	  	 if (event.feature.getGeometry() instanceof google.maps.LatLng) {
 	  		infowindow.setPosition(event.feature.getGeometry());
 	  	  } else if (event.feature.getGeometry() instanceof google.maps.Data.Point) {
@@ -96,9 +100,7 @@ function initialize() {
 	  	  }
 	    
 	  	infowindow.setContent(content.html());
-	    infowindow.open(map);
-
-	    
+	    infowindow.open(map);	    
 	  });
  
   map.data.setStyle(function(feature) {
@@ -107,8 +109,7 @@ function initialize() {
         var r = Math.floor((255 * speedIndice) / 100),
             g = Math.floor((255 * (100 - speedIndice)) / 100),
             b = 0;
-	    
-	    
+	    	    
 	    return /** @type {google.maps.Data.StyleOptions} */({
 	      fillColor: "rgb("+r+", "+g+", "+b+")",
 	      strokeColor:  "rgb("+r+", "+g+", "+b+")",
@@ -120,8 +121,8 @@ function initialize() {
 
 
 $(function() {
-	
-	 $.getJSON('http://localhost:8080/json/chart/amne/activity/84887/speed/', function(data) {
+		
+	 $.getJSON('http://localhost:8080/json/chart/Amne/activity/'+fileId+'/speed/', function(data) {
 	    	$('#containerChartSpeed').highcharts(data);
 	    });
 	 
@@ -131,7 +132,7 @@ $(function() {
 	    	  e.preventDefault();
 	    	  $(this).tab('show');
 	    	  var strTab = this.hash.replace('#','');
-	    	  $.getJSON('http://localhost:8080/json/chart/amne/activity/84887/'+strTab.toLowerCase()+'/', function(data) {
+	    	  $.getJSON('http://localhost:8080/json/chart/Amne/activity/'+fileId+'/'+strTab.toLowerCase()+'/', function(data) {
 	    		   $('#containerChart'+strTab).highcharts(data);
 	    		  });
 	    	  
@@ -156,7 +157,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 		<tr>
 			<td>
 				<ul class="nav nav-tabs" role="tablist" id="myTab">
-				  <li class="active"><a href="#Speed" role="tab" data-toggle="tab">Vitesse Km/h</a></li>
+				  <li class="active"><a href="#Speed" role="tab" data-toggle="tab">Vitesse</a></li>
 				  <li><a href="#Bpm" role="tab" data-toggle="tab">Fréquence Cardiaque</a></li>
 				   <li><a href="#Altitude" role="tab" data-toggle="tab">Altitude</a></li>
 				</ul>				
@@ -183,7 +184,8 @@ google.maps.event.addDomListener(window, 'load', initialize);
 								<th>Temps</th>
 								<th>Distance</th>
 								<th>Vitesse Max</th>
-								<th>Vitesse Moyenne</th>
+								<th>Vitesse Moy. (Km/h)</th>
+								<th>Vitesse Moy. (Min/Km)</th>
 								<th>Calories Brulées</th>
 								<th>Ascention Vertical</th>
 							</tr>
@@ -195,6 +197,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 								<td th:text="${row.totalDistance}">1</td>
 								<td th:text="${row.maxSpeed}">1</td>
 								<td th:text="${row.avgSpeed}">1</td>
+								<td th:text="${row.AvgSpeedMinKilo}">1</td>
 								<td th:text="${row.totalCalories}">1</td>
 								<td th:text="${row.totalAscent}">1</td>
 							</tr>
@@ -210,7 +213,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 						<thead>
 							<tr>
 								<th>Vitesse Max(Km/h)</th>
-								<th>Vitesse Moyenne(Km/h)</th>
+								<th>Vitesse Moy.(Km/h)</th>
 								<th>Distance total(Mètres)</th>
 								<th>Total calories brulées</th>
 							</tr>
